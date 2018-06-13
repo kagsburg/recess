@@ -14,3 +14,4 @@ KUNYA NATHERN               216006158                               16/U/6372/EV
 
 Okurut Julius               216014096                               16/U/10950/PS                           okurut.julius@cis.mak.ac.ug
 
+KASOZI BENJAMIN             216015602                                16/U/5538/EVE                          kasojamin@gmail.com
