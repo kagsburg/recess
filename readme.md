@@ -10,5 +10,5 @@ NAME                      STUDENT NUMBER                          REGISTRATION N
 
 KUNYA NATHERN               216006158                               16/U/6372/EVE                           kunyanathan2016@gmail.com
 
-
+Okurut Julius               216014096                               16/U/10950/PS                           okurut.julius@cis.mak.ac.ug
 
