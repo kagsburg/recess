@@ -36,7 +36,7 @@ ui <- dashboardPage( skin = "red",
                 box(selectInput("va","Select a suitable dataset",
                                 choices = c("Canada"=1,"USA"=2,"Germany"=3,"France"=4)
                         
-                )
+                ), status = "success", solidHeader=TRUE
                  
                 )
               )
@@ -52,10 +52,12 @@ ui <- dashboardPage( skin = "red",
       
                               
                                 
-                                ) )
+                                ),background="red" )
               ),
               fluidRow(
-                box(plotOutput("myhist"),width = 400)
+                box(plotOutput("myhist"),width = 400, title = "Bar plot based on the different datasets",background ="green")
+              ),fluidRow(
+                box(downloadButton(outputId="downloadData", label = "Download the plot"),background = "yellow")
               )
       ),
       #3rd tab content

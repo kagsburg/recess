@@ -6,10 +6,10 @@
 # 
 #    http://shiny.rstudio.com/
 #
-dat1 <-read.csv(file = "CAvideos.csv", nrows= 40000, header= T)
-dat2 <-read.csv(file = "USvideos.csv", nrows= 40000, header= T)
-dat3 <-read.csv(file = "DEvideos.csv", nrows= 40000, header= T)
-dat4 <-read.csv(file = "FRvideos.csv", nrows= 40000, header= T)
+dat1 <-read.csv(file = "CAvideos.csv", nrows= 4000, header= T)
+dat2 <-read.csv(file = "USvideos.csv", nrows= 4000, header= T)
+dat3 <-read.csv(file = "DEvideos.csv", nrows= 4000, header= T)
+dat4 <-read.csv(file = "FRvideos.csv", nrows= 4000, header= T)
 library(shiny)
 library(ggplot2)
 library(dplyr)
@@ -131,30 +131,51 @@ shinyServer(function(input, output) {
   output$likes <- renderInfoBox({
   second <- input$va
   if(second==1){
-    my <- summarise_all(dat1[c("likes","category_id")],funs(max(likes)))
-    valueBox(value = my,
+    my <- summarise_all(dat1[c("likes")],funs(max(likes)))
+    for(row in 1:nrow(mydata)){
+      li <- mydata[row , "likes"]
+      
+      cate <- mydata[row , "category_id"]
+      if (li==my){
+        
+        w <- li
+        a<-cate
+        
+      }
+    }
+    valueBox(value= a,
              subtitle = "Highest likes of a video "
                )
     
   }
   else if(second==2){
-    my <- summarise_all(dat2[c("likes","category_id")],funs(max(likes)))
+    my <- summarise_all(dat2[c("likes")],funs(max(likes)))
     valueBox(value = my,
              subtitle = "Highest likes of a video "
     )
   }
   else if(second==3){
-    my <- summarise_all(dat3[c("likes","category_id")],funs(max(likes)))
+    my <- summarise_all(dat3[c("likes")],funs(max(likes)))
     valueBox(value = my,
-             subtitle = "Highest likes of a video "
+             subtitle = "Video with the highest likes  "
     )
   }
   else if(second==4){
-    my <- summarise_all(dat4[c("likes","category_id")],funs(max(likes)))
+    my <- summarise_all(dat4[c("likes")],funs(max(likes)))
     valueBox(value = my,
              subtitle = "Highest likes of a video "
     )
   }
   })
+  output$downloadData <- downloadHandler(
+    
+    filename = function() {
+      paste("data-", Sys.Date(), ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(data, file)
+    })
+  
+  
   
 })
