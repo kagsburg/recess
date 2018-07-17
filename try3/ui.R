@@ -18,25 +18,27 @@ ui <- dashboardPage( skin = "red",
   dashboardSidebar(
     sidebarMenu( 
       sidebarSearchForm("searchText","buttonSearch","Search"),
-      menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
-      menuSubItem("Extract data", tabName = "extract"),
+      menuItem("Home", tabName = "dashboard", icon = icon("fas fa-home")),
       menuItem("Barcharts", tabName = "charts", icon = icon("bar-chart")),
-      menuSubItem("Upload dataset",tabName = "Upload")
+      menuItem("Upload dataset",tabName = "Upload",icon=icon("fas fa-upload")),
+      menuItem("Caterogies",tabName ="data",icon = icon("fas fa-folder")),
+      menuItem("Sentiments",tabName="senti",icon = icon("far fa-paper-plane"))
     )
   ),
   dashboardBody(
     # Boxes need to be put in a row (or column)
     tabItems(
       # First tab content
-      tabItem(tabName = "dashboard",h2("Datasets basing on regions"),
-              fluidRow(valueBoxOutput("likes",width= 3)
+      tabItem(tabName = "dashboard",h2("Datasets basing on regions:Canada,USA,Germany,France"),
+              fluidRow(valueBoxOutput("likes",width= 3),valueBoxOutput("category",width = 4)
                 
               ),
               fluidRow(
-                box(selectInput("va","Select a suitable dataset",
-                                choices = c("Canada"=1,"USA"=2,"Germany"=3,"France"=4)
+                box(selectInput("va1","Select a suitable dataset",choices = c("Canada"=1,"USA"=2,"Germany"=3,"France"=4)
+                              
                         
-                ), status = "success", solidHeader=TRUE
+                ),#submitButton("Enter"), 
+                status = "success", solidHeader=TRUE
                  
                 )
               )
@@ -47,12 +49,13 @@ ui <- dashboardPage( skin = "red",
       tabItem(tabName = "charts",
               h2("Visualized data"),
               fluidRow(
-                box(selectInput("var","Select a variable from the dataset",
+                box(selectInput("var1","Select a variable from the dataset",
                                 choices = c("views"=8,"likes"=9,"dislikes"=10,"comment_count"=11)
       
                               
                                 
-                                ),background="red" )
+                                ),background="red"#submitButton("Enter") 
+                    )
               ),
               fluidRow(
                 box(plotOutput("myhist"),width = 400, title = "Bar plot based on the different datasets",background ="green")
@@ -61,14 +64,7 @@ ui <- dashboardPage( skin = "red",
               )
       ),
       #3rd tab content
-      tabItem(tabName ="extract",h1("One is able to extract YouTube Data"),
-              fluidRow(
-               # box(selectInput("category_id",
-                                #"Select a category_id of the videos",
-                                #choices = "CAvideos$category_id")),
-                #box(tableOutput("videosout"))
-              )
-              ),
+     
       tabItem(tabName = "Upload",multiple=T,
               fluidRow(
                box(
@@ -80,6 +76,27 @@ ui <- dashboardPage( skin = "red",
                
               ),
               fluidRow(box(tableOutput("input_file")))
+              ),
+     # category panel
+      tabItem(tabName ="data",
+              fluidRow(
+                box(
+                  tableOutput("descpt")
+                )
+              )
+              ),
+     #sentiment panel
+      tabItem(tabName = "senti",
+              fluidRow(
+                box(
+                 textInput("api","Insert your api key"),
+                  textInput("video_id","insert a video id")
+                  #submitButton("Update")
+                )
+               
+              ), fluidRow(
+                box(plotOutput("sentiment"))
+              )
               )
     ))
 )

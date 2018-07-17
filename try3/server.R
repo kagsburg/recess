@@ -6,22 +6,23 @@
 # 
 #    http://shiny.rstudio.com/
 #
-dat1 <-read.csv(file = "CAvideos.csv", nrows= 4000, header= T)
-dat2 <-read.csv(file = "USvideos.csv", nrows= 4000, header= T)
-dat3 <-read.csv(file = "DEvideos.csv", nrows= 4000, header= T)
-dat4 <-read.csv(file = "FRvideos.csv", nrows= 4000, header= T)
+dat1 <-read.csv(file = "CAvideos.csv", nrows= 40000, header= T)
+dat2 <-read.csv(file = "USvideos.csv", nrows= 40000, header= T)
+dat3 <-read.csv(file = "DEvideos.csv", nrows= 40000, header= T)
+dat4 <-read.csv(file = "FRvideos.csv", nrows= 40000, header= T)
+dt1<- read.csv(file = "Book1.csv", header = T)
 library(shiny)
+library(SocialMediaLab)
+library(syuzhet)
+library(igraph)
 library(ggplot2)
 library(dplyr)
 library(ggthemes)
 options(shiny.maxRequestSize= 60^1024^2)
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
- 
-  output$videosout<- renderTable({
-    category_idFilter <- subset("videos",videosout$category_id == input$category_id)
-   
-  })
+
+  
   output$input_file <- renderTable({
     file_to_read = input$file1
     if(is.null(file_to_read)){
@@ -36,8 +37,8 @@ shinyServer(function(input, output) {
     #summary(mydata)
    # })
   output$myhist <- renderPlot({
-    second <- input$va
-    first <- input$var
+    second <- input$va1
+    first <- input$var1
     if(second==1){
     if(first==8){
   dat1 %>% select(category_id,views) %>% group_by(category_id) %>%ggplot(
@@ -128,53 +129,129 @@ shinyServer(function(input, output) {
       }}
     
   })
-  output$likes <- renderInfoBox({
-  second <- input$va
-  if(second==1){
+  output$likes <- renderValueBox({
+  second2 <- input$va1
+  if(second2==1){
     my <- summarise_all(dat1[c("likes")],funs(max(likes)))
-    for(row in 1:nrow(mydata)){
-      li <- mydata[row , "likes"]
-      
-      cate <- mydata[row , "category_id"]
-      if (li==my){
-        
-        w <- li
-        a<-cate
-        
-      }
-    }
-    valueBox(value= a,
+    
+    valueBox(value= my,
              subtitle = "Highest likes of a video "
                )
+    #valueBox(value = "hello",color = "yellow",
+     #        subtitle = "string of hell")
     
   }
-  else if(second==2){
+  else if(second2==2){
     my <- summarise_all(dat2[c("likes")],funs(max(likes)))
     valueBox(value = my,
              subtitle = "Highest likes of a video "
     )
   }
-  else if(second==3){
+  else if(second2==3){
     my <- summarise_all(dat3[c("likes")],funs(max(likes)))
     valueBox(value = my,
              subtitle = "Video with the highest likes  "
     )
   }
-  else if(second==4){
+  else if(second2==4){
     my <- summarise_all(dat4[c("likes")],funs(max(likes)))
     valueBox(value = my,
              subtitle = "Highest likes of a video "
     )
   }
   })
+ output$category<- renderValueBox({
+   second3 <- input$va1
+   if(second3==1){
+     my <- summarise_all(dat1[c("likes")],funs(max(likes)))
+     for(row in 1:nrow(dat1)){
+       li <- dat1[row , "likes"]
+       
+       cate <- dat1[row , "category_id"]
+       if (li==my){
+         
+         
+         w<-cate
+       }
+     }
+     valueBox(value= w,
+              subtitle = "The category in which the video belongs to",color = "yellow"
+     )
+   }
+   else if(second3==2){
+     my <- summarise_all(dat2[c("likes")],funs(max(likes)))
+     for(row in 1:nrow(dat2)){
+       li <- dat2[row , "likes"]
+       
+       cate <- dat2[row , "category_id"]
+       if (li==my){
+         a<-cate
+         
+       }
+     }
+     valueBox(value= a,
+              subtitle = "The category in which the video belongs to",color = "yellow"
+     )
+   }
+   else if(second3==3){
+     my <- summarise_all(dat3[c("likes")],funs(max(likes)))
+     for(row in 1:nrow(dat3)){
+       li <- dat3[row , "likes"]
+       
+       cate <- dat3[row , "category_id"]
+       if (li==my){
+        
+         a<-cate
+         
+       }
+     }
+     valueBox(value= a,
+              subtitle = "The category in which the video belongs to",color = "yellow"
+     )
+   }
+   else if(second3==4){
+     my <- summarise_all(dat4[c("likes")],funs(max(likes)))
+     for(row in 1:nrow(dat4)){
+       li <- dat4[row , "likes"]
+       
+       cate <- dat4[row , "category_id"]
+       if (li==my){
+         a<-cate
+         
+       }
+     }
+     valueBox(value= a,
+              subtitle = "The category in which the video belongs to",color = "yellow"
+     )
+   }
+ })
   output$downloadData <- downloadHandler(
     
     filename = function() {
-      paste("data-", Sys.Date(), ".csv", sep="")
+      paste("data-", Sys.Date(), ".csv", sep=".")
     },
     content = function(file) {
       write.csv(data, file)
     })
+  output$descpt<- renderTable({ dt1[1:32,]
+    } )
+  output$sentiment<- renderPlot({
+  api1<- input$api
+  vid<-input$video_id
+   key <- AuthenticateWithYoutubeAPI(api1)
+  Video <- c(vid)
+  ytdata1 <- CollectDataYoutube(Video,key,writeToFile = FALSE)
+  Comments1<- iconv(ytdata1$Comment)
+  s <- get_nrc_sentiment(Comments1)
+  s$neutral <- ifelse(s$negative+s$positive==0,1,0)
+  barplot(100*colSums(s)/sum(s),
+        las = 2,
+      col = rainbow(10),
+      ylab = 'percentage',
+     main = 'Sentiment scores'
+  )
+  
+  })
   
   
   
