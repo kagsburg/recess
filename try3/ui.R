@@ -20,6 +20,7 @@ ui <- dashboardPage( skin = "red",
       sidebarSearchForm("searchText","buttonSearch","Search"),
       menuItem("Home", tabName = "dashboard", icon = icon("fas fa-home")),
       menuItem("Barcharts", tabName = "charts", icon = icon("bar-chart")),
+      menuItem("Trending",tabName = "trend",icon = icon("far fa-fire")),
       menuItem("Upload dataset",tabName = "Upload",icon=icon("fas fa-upload")),
       menuItem("Caterogies",tabName ="data",icon = icon("fas fa-folder")),
       menuItem("Sentiments",tabName="senti",icon = icon("far fa-paper-plane"))
@@ -40,6 +41,19 @@ ui <- dashboardPage( skin = "red",
                 ),#submitButton("Enter"), 
                 status = "success", solidHeader=TRUE
                  
+                )
+              ),
+              fluidRow(
+                box(selectInput("var3","Select a variable from the dataset",
+                                choices = c("views"=8,"likes"=9,"dislikes"=10,"comment_count"=11)
+                                
+                                
+                                
+                ),background="red")
+              ),
+              fluidRow(
+                box(
+                  tableOutput("summary")
                 )
               )
              
@@ -85,6 +99,18 @@ ui <- dashboardPage( skin = "red",
                 )
               )
               ),
+     #trending panel
+     tabItem(
+       tabName = "trend",fluidRow(
+         box(selectInput("var2","Select a variable from the dataset",
+                         choices = c("views"=8,"likes"=9)
+                         
+                         
+                         
+         ),background="red"#submitButton("Enter") 
+         )),fluidRow(box(tableOutput("trending"), width = 6))
+     )
+     ,
      #sentiment panel
       tabItem(tabName = "senti",
               fluidRow(

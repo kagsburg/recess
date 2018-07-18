@@ -240,7 +240,7 @@ shinyServer(function(input, output) {
   vid<-input$video_id
    key <- AuthenticateWithYoutubeAPI(api1)
   Video <- c(vid)
-  ytdata1 <- CollectDataYoutube(Video,key,writeToFile = FALSE)
+  ytdata1 <- CollectDataYoutube(videoIDs = Video,apiKeyYoutube = key,writeToFile = FALSE)
   Comments1<- iconv(ytdata1$Comment)
   s <- get_nrc_sentiment(Comments1)
   s$neutral <- ifelse(s$negative+s$positive==0,1,0)
@@ -252,6 +252,107 @@ shinyServer(function(input, output) {
   )
   
   })
+  output$summary <- renderTable({
+    summ1<- input$var3
+    sec3 <- input$va1
+    if(sec3==1){
+      if(summ1==8){
+        as.array(summary(dat1$views))
+        
+      } 
+      else if(summ1==9){
+        as.array(summary(dat1$likes))
+        
+      } 
+      else if(summ1==10){
+       as.array(summary(dat1$dislikes))  
+      }
+      else if(summ1==11){
+       as.array(summary(dat1$comment_count))  
+      }}
+    else if(sec3==2){
+      if(summ1==8){
+        as.array(summary(dat2$views))
+      } 
+      else if(summ1==9){
+        as.array(summary(dat2$likes))
+        
+      } 
+      else if(summ1==10){
+        as.array(summary(dat2$dislikes)) 
+      }
+      else if(summ1==11){
+        as.array(summary(dat2$comment_count)) 
+      }}
+    else if(sec3==3){
+      if(summ1==8){
+        as.array(summary(dat3$views)) 
+      } 
+      else if(summ1==9){
+        as.array(summary(dat3$likes)) 
+        
+      } 
+      else if(summ1==10){
+        as.array(summary(dat3$dislikes)) 
+      }
+      else if(summ1==11){
+        as.array(summary(dat3$comment_count)) 
+      }}
+    else  if(sec3==4){
+      if(summ1==8){
+        as.array(summary(dat4$views)) 
+      } 
+      else if(summ1==9){
+        as.array(summary(dat4$likes)) 
+        
+      } 
+      else if(summ1==10){
+        as.array(summary(dat4$dislikes)) 
+      }
+      else if(summ1==11){
+        as.array(summary(dat4$comment_count)) 
+      }}
+    
+    
+    
+  })
+  output$trending<- renderTable({
+    sec1<-input$var2
+    fir1<-input$va1
+    if(fir1==1){
+      if (sec1==8){
+        dat1%>%select(video_id,title,views)%>%arrange(desc(views))%>%slice(1:10)
+      }
+      else if(sec1==9){
+        dat1%>%select(video_id,title,likes)%>%arrange(desc(likes))%>%slice(1:10)
+      }
+    }
+    else if(fir1==2){
+      if (sec1==8){
+        dat2%>%select(video_id,title,views)%>%arrange(desc(views))%>%slice(1:10)
+      }
+      else if(sec1==9){
+        dat2%>%select(video_id,title,likes)%>%arrange(desc(likes))%>%slice(1:10)
+      }
+    }
+    else if(fir1==3){
+      if (sec1==8){
+        dat3%>%select(video_id,title,views)%>%arrange(desc(views))%>%slice(1:10)
+      }
+      else if(sec1==9){
+        dat3%>%select(video_id,title,likes)%>%arrange(desc(likes))%>%slice(1:10)
+      }
+    }
+    else if(fir1==4){
+      if (sec1==8){
+        dat4%>%select(video_id,title,views)%>%arrange(desc(views))%>%slice(1:10)
+      }
+      else if(sec1==9){
+        dat4%>%select(video_id,title,likes)%>%arrange(desc(likes))%>%slice(1:10)
+      }
+    }
+  })
+  
   
   
   
