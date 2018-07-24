@@ -6,15 +6,19 @@
 # 
 #    http://shiny.rstudio.com/
 #
-dat1 <-read.csv(file = "CAvideos.csv", nrows= 40000, header= T)
-dat2 <-read.csv(file = "USvideos.csv", nrows= 40000, header= T)
-dat3 <-read.csv(file = "DEvideos.csv", nrows= 40000, header= T)
-dat4 <-read.csv(file = "FRvideos.csv", nrows= 40000, header= T)
+dat1 <-read.csv(file = "CAvideos.csv", header= T)
+dat2 <-read.csv(file = "USvideos.csv", header= T)
+dat3 <-read.csv(file = "DEvideos.csv", header= T)
+dat4 <-read.csv(file = "FRvideos.csv", header= T)
 dt1<- read.csv(file = "Book1.csv", header = T)
 library(shiny)
 library(SocialMediaLab)
 library(syuzhet)
 library(igraph)
+
+library(tm)
+library(SnowballC)
+library(wordcloud)
 library(ggplot2)
 library(dplyr)
 library(ggthemes)
@@ -41,90 +45,90 @@ shinyServer(function(input, output) {
     first <- input$var1
     if(second==1){
     if(first==8){
-  dat1 %>% select(category_id,views) %>% group_by(category_id) %>%ggplot(
-      aes(category_id,views,fill=views ))+geom_col()+ggtitle("The Number of Views in the different categories of videos")+
+  dat1 %>% select(category_id,views,trending_date) %>% group_by(category_id) %>%ggplot(
+      aes(category_id,views,fill=trending_date))+geom_col()+ggtitle("Number of Views against Category_Id")+
          labs(x ='Category id', y ='Views')
     } 
     else if(first==9){
-      dat1 %>% select(category_id,likes) %>% group_by(category_id) %>%ggplot(
-        aes(category_id,likes))+geom_col()+ggtitle("The Number of Likes in the different categories of videos")+
+      dat1 %>% select(category_id,likes,trending_date) %>% group_by(category_id) %>%ggplot(
+        aes(category_id,likes,fill=trending_date))+geom_col()+ggtitle("Number of Likes against Category_Id")+
         labs(x ='Category id', y ='Likes')
       
     } 
    else if(first==10){
-      dat1 %>% select(category_id, dislikes) %>% group_by(category_id) %>%ggplot(
-        aes(category_id,dislikes, fill=dislikes ))+geom_col()+ggtitle("The Number of dislikes in the different categories of videos")+
+      dat1 %>% select(category_id, dislikes,trending_date) %>% group_by(category_id) %>%ggplot(
+        aes(category_id,dislikes,fill=trending_date ))+geom_col()+ggtitle("Number of dislikes against Category_Id")+
        labs(x ='Category id', y ='Dislikes')
     }
     else if(first==11){
-      dat1 %>% select(category_id,comment_count) %>% group_by(category_id) %>%ggplot(
-        aes(category_id,comment_count,fill= comment_count ))+geom_col()+ggtitle("The Number of Comments in the different categories of videos")+
+      dat1 %>% select(category_id,comment_count,trending_date) %>% group_by(category_id) %>%ggplot(
+        aes(category_id,comment_count,fill=trending_date ))+geom_col()+ggtitle("Number of Comments against Category_Id")+
         labs(x ='Category id', y ='Comments')
     }}
     else if(second==2){
       if(first==8){
-        dat2 %>% select(category_id,views) %>% group_by(category_id) %>%ggplot(
-          aes(category_id,views,fill=views ))+geom_col()+ggtitle("The Number of Views in the different categories of videos")+
+        dat2 %>% select(category_id,views,trending_date) %>% group_by(category_id) %>%ggplot(
+          aes(category_id,views,fill=trending_date ))+geom_col()+ggtitle("Number of Views against Category_Id")+
           labs(x ='Category id', y ='Views')
       } 
       else if(first==9){
-        dat2 %>% select(category_id,likes) %>% group_by(category_id) %>%ggplot(
-          aes(category_id,likes))+geom_col()+ggtitle("The Number of Likes in the different categories of videos")+
+        dat2 %>% select(category_id,likes,trending_date) %>% group_by(category_id) %>%ggplot(
+          aes(category_id,likes,fill=trending_date))+geom_col()+ggtitle("Number of Likes against Category_Id")+
           labs(x ='Category id', y ='Likes')
         
       } 
       else if(first==10){
-        dat2 %>% select(category_id, dislikes) %>% group_by(category_id) %>%ggplot(
-          aes(category_id,dislikes, fill=dislikes ))+geom_col()+ggtitle("The Number of dislikes in the different categories of videos")+
+        dat2 %>% select(category_id, dislikes,trending_date) %>% group_by(category_id) %>%ggplot(
+          aes(category_id,dislikes,fill=trending_date ))+geom_col()+ggtitle("Number of dislikes against Category_Id")+
           labs(x ='Category id', y ='Dislikes')
       }
       else if(first==11){
-        dat2 %>% select(category_id,comment_count) %>% group_by(category_id) %>%ggplot(
-          aes(category_id,comment_count,fill= comment_count ))+geom_col()+ggtitle("The Number of Comments in the different categories of videos")+
+        dat2 %>% select(category_id,comment_count,trending_date) %>% group_by(category_id) %>%ggplot(
+          aes(category_id,comment_count,fill=trending_date ))+geom_col()+ggtitle("Number of Comments against Category_Id")+
           labs(x ='Category id', y ='Comments')
       }}
     else if(second==3){
       if(first==8){
-        dat3 %>% select(category_id,views) %>% group_by(category_id) %>%ggplot(
-          aes(category_id,views,fill=views ))+geom_col()+ggtitle("The Number of Views in the different categories of videos")+
+        dat3 %>% select(category_id,views,trending_date) %>% group_by(category_id) %>%ggplot(
+          aes(category_id,views,fill=trending_date ))+geom_col()+ggtitle("Number of Views against Category_Id")+
           labs(x ='Category id', y ='Views')
       } 
       else if(first==9){
-        dat3 %>% select(category_id,likes) %>% group_by(category_id) %>%ggplot(
-          aes(category_id,likes))+geom_col()+ggtitle("The Number of Likes in the different categories of videos")+
+        dat3 %>% select(category_id,likes,trending_date) %>% group_by(category_id) %>%ggplot(
+          aes(category_id,likes,fill=trending_date))+geom_col()+ggtitle("Number of Likes against Category_Id")+
           labs(x ='Category id', y ='Likes')
         
       } 
       else if(first==10){
-        dat3 %>% select(category_id, dislikes) %>% group_by(category_id) %>%ggplot(
-          aes(category_id,dislikes, fill=dislikes ))+geom_col()+ggtitle("The Number of dislikes in the different categories of videos")+
+        dat3 %>% select(category_id, dislikes,trending_date) %>% group_by(category_id) %>%ggplot(
+          aes(category_id,dislikes,fill=trending_date ))+geom_col()+ggtitle("Number of dislikes against Category_Id")+
           labs(x ='Category id', y ='Dislikes')
       }
       else if(first==11){
-        dat3 %>% select(category_id,comment_count) %>% group_by(category_id) %>%ggplot(
-          aes(category_id,comment_count,fill= comment_count ))+geom_col()+ggtitle("The Number of Comments in the different categories of videos")+
+        dat3 %>% select(category_id,comment_count,trending_date) %>% group_by(category_id) %>%ggplot(
+          aes(category_id,comment_count,fill=trending_date ))+geom_col()+ggtitle("Number of Comments against Category_Id")+
           labs(x ='Category id', y ='Comments')
       }}
     else  if(second==4){
       if(first==8){
-        dat4 %>% select(category_id,views) %>% group_by(category_id) %>%ggplot(
-          aes(category_id,views,fill=views ))+geom_col()+ggtitle("The Number of Views in the different categories of videos")+
+        dat4 %>% select(category_id,views,trending_date) %>% group_by(category_id) %>%ggplot(
+          aes(category_id,views,fill=trending_date))+geom_col()+ggtitle("Number of Views against Category_Id")+
           labs(x ='Category id', y ='Views')
       } 
       else if(first==9){
-        dat4 %>% select(category_id,likes) %>% group_by(category_id) %>%ggplot(
-          aes(category_id,likes))+geom_col()+ggtitle("The Number of Likes in the different categories of videos")+
+        dat4 %>% select(category_id,likes,trending_date) %>% group_by(category_id) %>%ggplot(
+          aes(category_id,likes,fill=trending_date))+geom_col()+ggtitle("Number of Likes against Category_Id")+
           labs(x ='Category id', y ='Likes')
         
       } 
       else if(first==10){
-        dat4 %>% select(category_id, dislikes) %>% group_by(category_id) %>%ggplot(
-          aes(category_id,dislikes, fill=dislikes ))+geom_col()+ggtitle("The Number of dislikes in the different categories of videos")+
+        dat4 %>% select(category_id, dislikes,trending_date) %>% group_by(category_id) %>%ggplot(
+          aes(category_id,dislikes,fill=trending_date ))+geom_col()+ggtitle("Number of dislikes against Category_Id")+
           labs(x ='Category id', y ='Dislikes')
       }
       else if(first==11){
-        dat4 %>% select(category_id,comment_count) %>% group_by(category_id) %>%ggplot(
-          aes(category_id,comment_count,fill= comment_count ))+geom_col()+ggtitle("The Number of Comments in the different categories of videos")+
+        dat4 %>% select(category_id,comment_count,trending_date) %>% group_by(category_id) %>%ggplot(
+          aes(category_id,comment_count,fill=trending_date ))+geom_col()+ggtitle("Number of Comments against Category_Id")+
           labs(x ='Category id', y ='Comments')
       }}
     
@@ -233,9 +237,90 @@ shinyServer(function(input, output) {
     content = function(file) {
       write.csv(data, file)
     })
-  output$descpt<- renderTable({ dt1[1:32,]
+  output$descpt<- renderTable({ 
+    dt1[1:32,]
     } )
+  output$chat <- renderPlot({
+    req(input$api)
+    req(input$video_id)
+    api1<- input$api
+    vid<-input$video_id
+    key <- AuthenticateWithYoutubeAPI(api1)
+    Video <- c(vid)
+    ytdata2 <- CollectDataYoutube(videoIDs = Video,apiKeyYoutube = key,writeToFile = FALSE)
+    docs2 <- Corpus(VectorSource(ytdata2$Comment))
+    toSpace <- content_transformer(function (x , pattern ) gsub(pattern, " ", x))
+    docs2 <- tm_map(docs2, toSpace, "/")
+    docs2 <- tm_map(docs2, toSpace, "@")
+    docs2 <- tm_map(docs2, toSpace, "\\|")
+    # Convert the text to lower case
+    docs2 <- tm_map(docs2, content_transformer(tolower))
+    # Remove numbers
+    docs2 <- tm_map(docs2, removeNumbers)
+    # Remove english common stopwords
+    #View(stopwords("english")) 
+    docs2 <- tm_map(docs2, removeWords, stopwords("english"))
+    # Remove your own stop word
+    # specify your stopwords as a character vector
+    # Remove punctuations
+    docs2 <- tm_map(docs2, removePunctuation)
+    # Eliminate extra white spaces
+    docs2 <- tm_map(docs2, stripWhitespace)
+    # Text stemming
+    docs2 <- tm_map(docs2, stemDocument)
+    dtm <- TermDocumentMatrix(docs2)
+    m <- as.matrix(dtm)
+    #View(m)
+    v <- sort(rowSums(m),decreasing=TRUE)
+    d <- data.frame(word = names(v),freq=v)
+    #View(d)
+    #head(d, 50)
+    #set.seed(1234)
+    #wordcloud(docs2,  max.words=1000, random.order=FALSE, rot.per=0.2,colors=brewer.pal(8, "Dark2"))
+    barplot(d[1:20,]$freq, las = 2, names.arg = d[1:20,]$word,col ="lightblue", main ="Most frequently used words",ylab = "Word frequencies")
+  })
+  output$word<- renderPlot({
+    req(input$api)
+    req(input$video_id)
+    api1<- input$api
+    vid<-input$video_id
+    key <- AuthenticateWithYoutubeAPI(api1)
+    Video <- c(vid)
+    ytdata3 <- CollectDataYoutube(videoIDs = Video,apiKeyYoutube = key,writeToFile = FALSE)
+    docs3 <- Corpus(VectorSource(ytdata3$Comment))
+    toSpace <- content_transformer(function (x , pattern ) gsub(pattern, " ", x))
+    docs3 <- tm_map(docs3, toSpace, "/")
+    docs3 <- tm_map(docs3, toSpace, "@")
+    docs3 <- tm_map(docs3, toSpace, "\\|")
+    # Convert the text to lower case
+    docs3 <- tm_map(docs3, content_transformer(tolower))
+    # Remove numbers
+    docs3 <- tm_map(docs3, removeNumbers)
+    # Remove english common stopwords
+    #View(stopwords("english")) 
+    docs3 <- tm_map(docs3, removeWords, stopwords("english"))
+    # Remove your own stop word
+    # specify your stopwords as a character vector
+    # Remove punctuations
+    docs3 <- tm_map(docs3, removePunctuation)
+    # Eliminate extra white spaces
+    docs3 <- tm_map(docs3, stripWhitespace)
+    # Text stemming
+    docs3 <- tm_map(docs3, stemDocument)
+   # dtm <- TermDocumentMatrix(docs2)
+    #m <- as.matrix(dtm)
+    #View(m)
+    #v <- sort(rowSums(m),decreasing=TRUE)
+    #d <- data.frame(word = names(v),freq=v)
+    #View(d)
+    #head(d, 50)
+    #set.seed(1234)
+    wordcloud(docs3,  max.words=1000, random.order=FALSE, rot.per=0.2,colors=brewer.pal(8, "Dark2"))
+    
+  })
   output$sentiment<- renderPlot({
+    req(input$api)
+    req(input$video_id)
   api1<- input$api
   vid<-input$video_id
    key <- AuthenticateWithYoutubeAPI(api1)
@@ -321,35 +406,27 @@ shinyServer(function(input, output) {
     fir1<-input$va1
     if(fir1==1){
       if (sec1==8){
-        dat1%>%select(video_id,title,views)%>%arrange(desc(views))%>%slice(1:10)
+        dat1%>%select(video_id,trending_date,publish_time,title,category_id,views,likes)%>%arrange(desc(views))%>%slice(1:10)
       }
-      else if(sec1==9){
-        dat1%>%select(video_id,title,likes)%>%arrange(desc(likes))%>%slice(1:10)
-      }
+     
     }
     else if(fir1==2){
       if (sec1==8){
-        dat2%>%select(video_id,title,views)%>%arrange(desc(views))%>%slice(1:10)
+        dat2%>%select(video_id,trending_date,publish_time,title,category_id,views,likes)%>%arrange(desc(views))%>%slice(1:10)
       }
-      else if(sec1==9){
-        dat2%>%select(video_id,title,likes)%>%arrange(desc(likes))%>%slice(1:10)
-      }
+      
     }
     else if(fir1==3){
       if (sec1==8){
-        dat3%>%select(video_id,title,views)%>%arrange(desc(views))%>%slice(1:10)
+        dat3%>%select(video_id,trending_date,publish_time,title,category_id,views,likes)%>%arrange(desc(views))%>%slice(1:10)
       }
-      else if(sec1==9){
-        dat3%>%select(video_id,title,likes)%>%arrange(desc(likes))%>%slice(1:10)
-      }
+      
     }
     else if(fir1==4){
       if (sec1==8){
-        dat4%>%select(video_id,title,views)%>%arrange(desc(views))%>%slice(1:10)
+        dat4%>%select(video_id,trending_date,publish_time,title,category_id,views,likes)%>%arrange(desc(views))%>%slice(1:10)
       }
-      else if(sec1==9){
-        dat4%>%select(video_id,title,likes)%>%arrange(desc(likes))%>%slice(1:10)
-      }
+      
     }
   })
   

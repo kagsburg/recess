@@ -11,26 +11,27 @@ library(shiny)
 
 library(shinydashboard)
 
+
 ui <- dashboardPage( skin = "red",
-  dashboardHeader(title = "YouTube Analysis",  titleWidth = 350,
+  dashboardHeader(title = "YouTube Data Analysis",  titleWidth = 350,
                   dropdownMenu( type= "message",messageItem(from = "Analyst",message = "data update"))),
  
   dashboardSidebar(
     sidebarMenu( 
       sidebarSearchForm("searchText","buttonSearch","Search"),
       menuItem("Home", tabName = "dashboard", icon = icon("fas fa-home")),
-      menuItem("Barcharts", tabName = "charts", icon = icon("bar-chart")),
+      menuItem("Plots", tabName = "charts", icon = icon("bar-chart")),
       menuItem("Trending",tabName = "trend",icon = icon("far fa-fire")),
       menuItem("Upload dataset",tabName = "Upload",icon=icon("fas fa-upload")),
-      menuItem("Caterogies",tabName ="data",icon = icon("fas fa-folder")),
-      menuItem("Sentiments",tabName="senti",icon = icon("far fa-paper-plane"))
+     
+      menuItem("Sentiment Analysis",tabName="senti",icon = icon("far fa-paper-plane"))
     )
   ),
   dashboardBody(
     # Boxes need to be put in a row (or column)
     tabItems(
       # First tab content
-      tabItem(tabName = "dashboard",h2("Datasets basing on regions:Canada,USA,Germany,France"),
+      tabItem(tabName = "dashboard",h2("DATASETS PRESENT FOR ANALYSIS"),
               fluidRow(valueBoxOutput("likes",width= 3),valueBoxOutput("category",width = 4)
                 
               ),
@@ -72,7 +73,10 @@ ui <- dashboardPage( skin = "red",
                     )
               ),
               fluidRow(
-                box(plotOutput("myhist"),width = 400, title = "Bar plot based on the different datasets",background ="green")
+                tabBox(width = 13,
+                  tabPanel("Barplot",plotOutput("myhist"), title = "Bar plot based on the different datasets",background ="red"),
+                  tabPanel("categories", tableOutput("descpt")))
+                
               ),fluidRow(
                 box(downloadButton(outputId="downloadData", label = "Download the plot"),background = "yellow")
               )
@@ -91,24 +95,17 @@ ui <- dashboardPage( skin = "red",
               ),
               fluidRow(box(tableOutput("input_file")))
               ),
-     # category panel
-      tabItem(tabName ="data",
-              fluidRow(
-                box(
-                  tableOutput("descpt")
-                )
-              )
-              ),
+     
      #trending panel
      tabItem(
        tabName = "trend",fluidRow(
          box(selectInput("var2","Select a variable from the dataset",
-                         choices = c("views"=8,"likes"=9)
+                         choices = c("views and likes"=8)
                          
                          
                          
-         ),background="red"#submitButton("Enter") 
-         )),fluidRow(box(tableOutput("trending"), width = 6))
+         ),background="red" 
+         )),fluidRow(box(tableOutput("trending"),width = 10))
      )
      ,
      #sentiment panel
@@ -117,11 +114,17 @@ ui <- dashboardPage( skin = "red",
                 box(
                  textInput("api","Insert your api key"),
                   textInput("video_id","insert a video id")
-                  #submitButton("Update")
+                 
                 )
                
               ), fluidRow(
-                box(plotOutput("sentiment"))
+                box(
+                  plotOutput("sentiment"), title = "Sentiment scores of the Youtube comments "
+                  ),
+                box(plotOutput("word"))
+              ),
+              fluidRow(
+                box(plotOutput("chat"))
               )
               )
     ))
