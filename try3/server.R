@@ -253,6 +253,7 @@ shinyServer(function(input, output) {
     docs2 <- tm_map(docs2, toSpace, "/")
     docs2 <- tm_map(docs2, toSpace, "@")
     docs2 <- tm_map(docs2, toSpace, "\\|")
+    docs2 <- tm_map(docs2, function(x) iconv(x, 'UTF-8', 'ASCII'))
     # Convert the text to lower case
     docs2 <- tm_map(docs2, content_transformer(tolower))
     # Remove numbers
@@ -292,6 +293,7 @@ shinyServer(function(input, output) {
     docs3 <- tm_map(docs3, toSpace, "/")
     docs3 <- tm_map(docs3, toSpace, "@")
     docs3 <- tm_map(docs3, toSpace, "\\|")
+      docs3 <- tm_map(docs3, function(x) iconv(x,'UTF-8', 'ASCII'))
     # Convert the text to lower case
     docs3 <- tm_map(docs3, content_transformer(tolower))
     # Remove numbers
